@@ -13,3 +13,17 @@ isPrime :: Int -> Bool
 isPrime n 
     | n < 2     = False
     | otherwise = n `elem` primesTo n
+
+-- Exercise 1: Goldbach Pairs
+
+goldbachPairs :: Int -> [(Int, Int)]
+goldbachPairs n
+    | n < 4 || odd n = [] -- Goldbach's conjecture applies to even integers greater than 2
+    | otherwise = 
+        [(p, q) 
+        | p <- [2..n]
+        , let q = n - p 
+        , p <= q
+        , isPrime p
+        , isPrime q
+        ]
