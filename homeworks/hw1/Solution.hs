@@ -27,3 +27,13 @@ goldbachPairs n
         , isPrime p
         , isPrime q
         ]
+
+-- Exercise 2:  Coprime Pairs
+coprimePairs :: [Int] -> [(Int, Int)]
+coprimePairs xs = 
+    [(x, y) 
+    | x <- xs
+    , y <- xs
+    , x < y
+    , gcd x y == 1
+    ]
