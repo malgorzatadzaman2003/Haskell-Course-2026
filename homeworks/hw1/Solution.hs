@@ -130,4 +130,15 @@ isPrimeInfinite n
         | n `mod` p == 0 = False -- n divisible by p, then not prime
         | otherwise = go ps -- check next prime
     go [] = False
-    
+
+-- Exercise 10: Strict Accumulation and Space Leaks
+
+-- (a) Non-strict version
+mean :: [Double] -> Double
+mean xs =
+  let (s, n) = go xs 0 0
+  in s / fromIntegral n
+  where
+    go [] sumX count = (sumX, count)
+    go (y:ys) sumX count = go ys (sumX + y) (count + 1)
+
