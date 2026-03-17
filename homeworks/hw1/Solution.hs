@@ -97,3 +97,20 @@ power b e = go 1 e
     go :: Int -> Int -> Int
     go !acc 0 = acc
     go !acc n = go (acc * b) (n - 1)
+
+-- Exercise 8: Running Maximum: seq vs. Bang Patterns
+listMaxSeq :: [Int] -> Int
+listMaxSeq [] = error "Empty list"
+listMaxSeq (x:xs) = go x xs
+  where
+    go acc[] = acc -- acc-current max, if no left return
+    go acc (y:ys) = -- if there are left, compare with current max and update, then continue with rest 
+        let newAcc = max acc y
+        in newAcc `seq` go newAcc ys
+
+listMaxBang :: [Int] -> Int
+listMaxBang [] = error "Empty list"
+listMaxBang (x:xs) = go x xs
+  where
+    go !acc [] = acc 
+    go !acc (y:ys) = go (max acc y) ys  
