@@ -114,3 +114,20 @@ listMaxBang (x:xs) = go x xs
   where
     go !acc [] = acc 
     go !acc (y:ys) = go (max acc y) ys  
+
+
+-- Exercise 9: Infinite Prime Stream
+primes :: [Int]
+primes = sieve [2..] 
+
+isPrimeInfinite :: Int -> Bool
+isPrimeInfinite n 
+    | n < 2     = False
+    | otherwise = go primes
+  where
+    go (p:ps)
+        | p * p > n = True -- primes up to sqrt(n) and divisor not found, then n is prime
+        | n `mod` p == 0 = False -- n divisible by p, then not prime
+        | otherwise = go ps -- check next prime
+    go [] = False
+    
