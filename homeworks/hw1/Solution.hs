@@ -142,3 +142,12 @@ mean xs =
     go [] sumX count = (sumX, count)
     go (y:ys) sumX count = go ys (sumX + y) (count + 1)
 
+-- (b) Strict version
+meanStrict :: [Double] -> Double
+meanStrict xs =
+  let (s, n) = go xs 0 0
+  in s / fromIntegral n
+  where
+    go [] !sumX !count = (sumX, count)
+    go (y:ys) !sumX !count = go ys (sumX + y) (count + 1)
+
