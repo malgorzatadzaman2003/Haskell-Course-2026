@@ -18,7 +18,7 @@ isPrime n
 
 goldbachPairs :: Int -> [(Int, Int)]
 goldbachPairs n
-    | n < 4 || odd n = [] -- Goldbach's conjecture applies to even integers greater than 2
+    | n < 4 || odd n = [] -- Goldbach's conjecture applies to even integers greater equal than 4
     | otherwise = 
         [(p, q) 
         | p <- [2..n]
@@ -37,3 +37,16 @@ coprimePairs xs =
     , x < y
     , gcd x y == 1
     ]
+
+-- Exercise 4: Matrix Multiplication
+matMul :: [[Int]] -> [[Int]] -> [[Int]]
+matMul a b =
+    [[sum [ a !! i !! k * b !! k !! j | k <- [0 .. p-1] ] 
+     | j <- [0 .. n-1] 
+     ] 
+    | i <- [0 .. m-1] 
+    ]
+    where
+        m = length a
+        p = length (head a)
+        n = length (head b)
