@@ -151,3 +151,14 @@ meanStrict xs =
     go [] !sumX !count = (sumX, count)
     go (y:ys) !sumX !count = go ys (sumX + y) (count + 1)
 
+-- (c) Strict for mean and variance
+meanVariance :: [Double] -> (Double, Double)
+meanVariance xs =
+  let (s, s2, n) = go xs 0 0 0
+      mu = s / fromIntegral n
+      var = s2 / fromIntegral n - mu * mu
+  in (mu, var)
+  where
+    go [] !sumX !sumX2 !count = (sumX, sumX2, count)
+    go (y:ys) !sumX !sumX2 !count =
+      go ys (sumX + y) (sumX2 + y * y) (count + 1)
