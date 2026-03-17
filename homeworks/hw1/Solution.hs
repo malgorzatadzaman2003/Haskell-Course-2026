@@ -72,3 +72,18 @@ permutations k xs =
     , let remaining = removeFirst x xs
     , perm <- permutations (k - 1) remaining
     ]
+
+-- Exercise 6: Hamming Numbers
+merge :: Ord a => [a] -> [a] -> [a]
+merge xs [] = xs
+merge [] ys = ys
+merge (x:xs) (y:ys)
+    | x < y     = x : merge xs (y:ys) -- we need sorted output hence comparisions 
+    | x > y     = y : merge (x:xs) ys
+    | otherwise = x : merge xs ys  
+
+-- Idea: -- take every hamming number(starting from 1) and multiply by 2, then merge with the rest(rest means do the same with 3 and 5)
+hamming :: [Int]
+hamming = 1 : merge (map (*2) hamming) 
+                    (merge (map (*3) hamming) 
+                    (map (*5) hamming))        
