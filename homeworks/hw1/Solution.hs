@@ -50,3 +50,25 @@ matMul a b =
         m = length a
         p = length (head a)
         n = length (head b)
+
+-- Exercise 5: Permutations
+
+--helper function: remove first occurrence of given element from a list, to avoid reusing elements when generating permutations
+removeFirst :: Eq a => a -> [a] -> [a]
+removeFirst _ [] = []
+removeFirst y (x:xs)
+    | y == x    = xs
+    | otherwise = x : removeFirst y xs       
+
+--permutations function: 
+-- Idea: for each element, fix it as the first and recursively construct smaller permutations.
+
+permutations :: Eq a => Int -> [a] -> [[a]]
+permutations 0 _ = [[]] 
+permutations _ [] = []
+permutations k xs = 
+    [ x : perm 
+    | x <- xs
+    , let remaining = removeFirst x xs
+    , perm <- permutations (k - 1) remaining
+    ]
