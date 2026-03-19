@@ -89,9 +89,7 @@ hamming = 1 : merge (map (*2) hamming)
                     (map (*5) hamming))        
 
 -- Exercise 7: Integer Power with Bang Patterns
-pow :: Int -> Int -> Int
-pow _ 0 = 1
-pow 0 _ = 0
+power :: Int -> Int -> Int
 power b e = go 1 e
   where
     go :: Int -> Int -> Int
