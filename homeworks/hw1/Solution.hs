@@ -83,7 +83,7 @@ merge (x:xs) (y:ys)
     | otherwise = x : merge xs ys  
 
 -- Idea: -- take every hamming number(starting from 1) and multiply by 2, then merge with the rest(rest means do the same with 3 and 5)
-hamming :: [Int]
+hamming :: [Integer]
 hamming = 1 : merge (map (*2) hamming) 
                     (merge (map (*3) hamming) 
                     (map (*5) hamming))        
