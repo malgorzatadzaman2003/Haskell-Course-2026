@@ -149,6 +149,9 @@ meanStrict xs =
     go [] !sumX !count = (sumX, count)
     go (y:ys) !sumX !count = go ys (sumX + y) (count + 1)
 
+-- Bang pattern on the pair itself is not sufficient. 
+-- The components must be forced individually, otherwise the pair constructor is evaluated but the fields may still remain thunks.
+
 -- (c) Strict for mean and variance
 meanVariance :: [Double] -> (Double, Double)
 meanVariance xs =
