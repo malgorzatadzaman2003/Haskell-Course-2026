@@ -8,3 +8,9 @@ instance Functor Sequence where
     fmap f (Single x) = Single (f x)
     fmap f (Append l r) = Append (fmap f l) (fmap f r)
 
+-- Exercise 2: Foldable for Sequence
+
+instance Foldable Sequence where
+    foldMap _ Empty = mempty
+    foldMap f (Single x) = f x
+    foldMap f (Append l r) = foldMap f l <> foldMap f r
