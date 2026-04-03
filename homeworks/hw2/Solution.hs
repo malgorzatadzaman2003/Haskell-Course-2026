@@ -85,4 +85,11 @@ myReverse :: [a] -> [a]
 myReverse = foldl (flip (:)) [] 
 
 -- (b)
+myTakeWhile :: (a -> Bool) -> [a] -> [a]
+myTakeWhile p = foldr step []
+  where
+    step x acc
+        | p x       = x : acc -- if x satisfies p, include it in the result
+        | otherwise = []     
+
 -- (c)
