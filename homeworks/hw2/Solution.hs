@@ -107,3 +107,6 @@ encode = foldr step []
         | otherwise = (x, 1) : (y, n) : rest -- not equal: start a new run for x, keep the existing run for y
 
 -- (b)
+decode :: [(a, Int)] -> [a]
+decode = foldr step []
+  where    step (x, n) acc = replicate n x ++ acc -- replicate x n times and concatenate with the accumulated result
