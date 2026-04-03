@@ -95,3 +95,15 @@ myTakeWhile p = foldr step []
 -- (c)
 decimal :: [Int] -> Int 
 decimal = foldl (\acc d -> acc * 10 + d) 0
+
+-- Exercise 8: Run-length encoding via folds
+-- (a)
+encode :: Eq a => [a] -> [(a, Int)]
+encode = foldr step []
+  where
+    step x [] = [(x, 1)] 
+    step x ((y, n) : rest) 
+        | x == y    = (y, n + 1) : rest -- equal: increase count of the run 
+        | otherwise = (x, 1) : (y, n) : rest -- not equal: start a new run for x, keep the existing run for y
+
+-- (b)
