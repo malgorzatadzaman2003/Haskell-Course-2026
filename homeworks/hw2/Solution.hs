@@ -93,3 +93,5 @@ myTakeWhile p = foldr step []
         | otherwise = []     
 
 -- (c)
+decimal :: [Int] -> Int 
+decimal = foldl (\acc d -> acc * 10 + d) 0
