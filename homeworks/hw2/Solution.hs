@@ -48,3 +48,12 @@ tailElem x seq0 = go [seq0] -- stack containing one item, the whole sequence
         | x == y    = True -- curr element matches x, return True
         | otherwise = go rest
     go (Append l r : rest) = go (l : r : rest) -- decompose append and continue with both parts
+
+-- Exercise 5: Tail Recursion and Sequence Flatten
+tailToList :: Sequence a -> [a]
+tailToList seq0 = reverse (go [seq0] []) 
+  where
+    go [] acc = acc
+    go (Empty : rest) acc = go rest acc
+    go (Single x : rest) acc = go rest (x : acc) -- prepend current element to accumulator( adds to the fromt)
+    go (Append l r : rest) acc = go (l : r : rest) acc 
