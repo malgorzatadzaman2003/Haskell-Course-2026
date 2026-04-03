@@ -28,3 +28,12 @@ seqToList = toList
 seqLength :: Sequence a -> Int
 seqLength = length
 
+-- Exercise 3: Semigroup and Monoid for Sequence
+
+instance Semigroup (Sequence a) where
+    Empty <> s = s
+    s <> Empty = s
+    s1 <> s2 = Append s1 s2
+
+instance Monoid (Sequence a) where
+    mempty = Empty
