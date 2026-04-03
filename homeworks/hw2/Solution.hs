@@ -37,3 +37,14 @@ instance Semigroup (Sequence a) where
 
 instance Monoid (Sequence a) where
     mempty = Empty
+
+-- Exercise 4: Tail Recursion and Sequence Search
+tailElem :: Eq a => a -> Sequence a -> Bool
+tailElem x seq0 = go [seq0] -- stack containing one item, the whole sequence
+  where
+    go [] = False
+    go (Empty : rest) = go rest
+    go (Single y : rest)
+        | x == y    = True -- curr element matches x, return True
+        | otherwise = go rest
+    go (Append l r : rest) = go (l : r : rest) -- decompose append and continue with both parts
