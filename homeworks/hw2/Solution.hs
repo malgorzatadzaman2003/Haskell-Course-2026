@@ -78,3 +78,11 @@ tailRPN tokens = go tokens []
         TDiv -> if y == 0 then Nothing -- division by 0
                 else go rest ((x `div` y) : stack)
     go _ _ = Nothing -- malformed expressions 
+
+-- Exercise 7: Expressing functions via foldr and foldl
+-- (a)
+myReverse :: [a] -> [a] 
+myReverse = foldl (flip (:)) [] 
+
+-- (b)
+-- (c)
