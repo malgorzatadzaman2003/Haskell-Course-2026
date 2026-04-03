@@ -39,6 +39,7 @@ instance Monoid (Sequence a) where
     mempty = Empty
 
 -- Exercise 4: Tail Recursion and Sequence Search
+
 tailElem :: Eq a => a -> Sequence a -> Bool
 tailElem x seq0 = go [seq0] -- stack containing one item, the whole sequence
   where
@@ -50,6 +51,7 @@ tailElem x seq0 = go [seq0] -- stack containing one item, the whole sequence
     go (Append l r : rest) = go (l : r : rest) -- decompose append and continue with both parts
 
 -- Exercise 5: Tail Recursion and Sequence Flatten
+
 tailToList :: Sequence a -> [a]
 tailToList seq0 = reverse (go [seq0] []) 
   where
@@ -57,3 +59,22 @@ tailToList seq0 = reverse (go [seq0] [])
     go (Empty : rest) acc = go rest acc
     go (Single x : rest) acc = go rest (x : acc) -- prepend current element to accumulator( adds to the fromt)
     go (Append l r : rest) acc = go (l : r : rest) acc 
+
+-- Exercise 6: Tail Recursion and Reverse Polish Notation
+
+data Token = TNum Int | TAdd | TSub | TMul | TDiv
+    deriving Show
+
+tailRPN :: [Token] -> Maybe Int
+tailRPN tokens = go tokens []
+  where
+    go [] [result] = Just result -- no tokens left, stack = one value
+    go [] _ = Nothing 
+    go (TNum n : rest) stack = go rest (n : stack) -- push number n onto stack
+    go (op : rest) (y : x : stack) = case op of
+        TAdd -> go rest ((x + y) : stack)
+        TSub -> go rest ((x - y) : stack)
+        TMul -> go rest ((x * y) : stack)
+        TDiv -> if y == 0 then Nothing -- division by 0
+                else go rest ((x `div` y) : stack)
+    go _ _ = Nothing -- malformed expressions 
