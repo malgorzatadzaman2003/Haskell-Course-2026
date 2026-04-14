@@ -32,3 +32,10 @@ safePath maze pos (d:ds) = do
     next <- move maze pos d
     rest <- safePath maze next ds   
     return (pos : rest)
+
+-- Exercise 2: Decoding a message
+
+type Key = Map Char Char
+
+decrypt :: Key -> String -> Maybe String
+decrypt key = traverse (\c -> Map.lookup c key)
