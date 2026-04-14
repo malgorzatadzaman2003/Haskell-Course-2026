@@ -123,3 +123,6 @@ validateAge n
         warn "WARNING!: Age above 150"
         return n
     | otherwise = return n
+
+validateAges :: [Int] -> Result [Int]
+validateAges = mapM validateAge
