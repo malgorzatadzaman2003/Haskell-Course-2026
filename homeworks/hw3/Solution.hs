@@ -18,5 +18,10 @@ move maze pos dir = do
 
 -- (b) followPath
 
+followPath :: Maze -> Pos -> [Dir] -> Maybe Pos
+followPath _ pos [] = Just pos
+followPath maze pos (d:ds) = do
+    next <- move maze pos d
+    followPath maze next ds
 
 -- (c) safePath
