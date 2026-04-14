@@ -111,4 +111,7 @@ instance Monad Result where
 warn :: String -> Result ()
 warn msg = Success () [msg] 
 
+failure :: String -> Result a
+failure = Failure    
+
 -- (c) Use the Result monad to implement a functions: validateAge, validateAges
