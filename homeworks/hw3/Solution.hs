@@ -92,3 +92,10 @@ data Result a = Failure String | Success a [String]
 instance Functor Result where
     fmap _ (Failure msg) = Failure msg
     fmap f (Success x warns) = Success (f x) warns
+
+instance Applicative Result where
+    pure x = Success x []
+    Failure msg <*> _ = Failure msg
+    Success _ warns <*> Failure msg = Failure msg
+    Success f warns1 <*> Success x warns2 = Success (f x) (warns1 ++ warns2)
+
