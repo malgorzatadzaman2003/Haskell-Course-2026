@@ -50,6 +50,20 @@ decryptWords key = traverse (decrypt key)
 type Guest = String
 type Conflict = (Guest, Guest)
 
+seatings :: [Guest] -> [Conflict] -> [[Guest]]
+seatings guests conflicts = do
+    perm <- permutationsM guests
+    guard (validSeating perm)
+    return perm
+  where
+    conflictsWith a b =
+        (a, b) `elem` conflicts || (b, a) `elem` conflicts
+
+    adjacentPairs [] = []
+    adjacentPairs [_] = []
+    adjacentPairs xs = zip xs (tail xs) ++ [(last xs, head xs)]
+
+    validSeating xs = all (\(a,b) -> not (conflictsWith a b)) (adjacentPairs xs)
 
 permutationsM :: Eq a => [a] -> [[a]]
 permutationsM [] = return []
