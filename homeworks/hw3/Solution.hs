@@ -39,3 +39,6 @@ type Key = Map Char Char
 
 decrypt :: Key -> String -> Maybe String
 decrypt key = traverse (\c -> Map.lookup c key)
+
+decryptWords :: Key -> [String] -> Maybe [String]
+decryptWords key = traverse (decrypt key)
