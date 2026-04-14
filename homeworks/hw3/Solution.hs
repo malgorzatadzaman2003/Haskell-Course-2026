@@ -99,4 +99,13 @@ instance Applicative Result where
     Success _ warns <*> Failure msg = Failure msg
     Success f warns1 <*> Success x warns2 = Success (f x) (warns1 ++ warns2)
 
---
+instance Monad Result where
+    Failure msg >>= _ = Failure msg
+    Success x warns1 >>= f =
+        case f x of
+            Failure msg -> Failure msg
+            Success y warns2 -> Success y (warns1 ++ warns2)
+            
+-- (b) Write helper functions: warn, failure
+
+-- (c) Use the Result monad to implement a functions: validateAge, validateAges
