@@ -99,3 +99,4 @@ instance Applicative Result where
     Success _ warns <*> Failure msg = Failure msg
     Success f warns1 <*> Success x warns2 = Success (f x) (warns1 ++ warns2)
 
+--
