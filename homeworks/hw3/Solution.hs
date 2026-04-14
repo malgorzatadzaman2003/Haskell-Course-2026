@@ -25,3 +25,10 @@ followPath maze pos (d:ds) = do
     followPath maze next ds
 
 -- (c) safePath
+
+safePath :: Maze -> Pos -> [Dir] -> Maybe [Pos]
+safePath _ pos [] = Just [pos]
+safePath maze pos (d:ds) = do
+    next <- move maze pos d
+    rest <- safePath maze next ds   
+    return (pos : rest)
