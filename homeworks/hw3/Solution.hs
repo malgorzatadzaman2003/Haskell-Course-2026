@@ -1,6 +1,8 @@
 import qualified Data.Map as Map
 import Data.Map (Map)
 
+import Control.Monad (guard)
+
 -- MAYBE MONAD
 
 -- Exercise 1: Maze navigation
@@ -42,3 +44,22 @@ decrypt key = traverse (\c -> Map.lookup c key)
 
 decryptWords :: Key -> [String] -> Maybe [String]
 decryptWords key = traverse (decrypt key)
+
+-- Exercise 3: List Monad
+
+type Guest = String
+type Conflict = (Guest, Guest)
+
+
+permutationsM :: Eq a => [a] -> [[a]]
+permutationsM [] = return []
+permutationsM xs = do
+    x <- xs
+    rest <- permutationsM (removeFirst x xs)
+    return (x : rest)
+
+removeFirst :: Eq a => a -> [a] -> [a]
+removeFirst _ [] = []
+removeFirst y (x:xs)
+    | y == x    = xs
+    | otherwise = x : removeFirst y xs
