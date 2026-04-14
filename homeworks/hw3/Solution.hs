@@ -115,3 +115,11 @@ failure :: String -> Result a
 failure = Failure    
 
 -- (c) Use the Result monad to implement a functions: validateAge, validateAges
+
+validateAge :: Int -> Result Int
+validateAge n
+    | n < 0     = failure "FAILURE!: Negative age"
+    | n > 150   = do
+        warn "WARNING!: Age above 150"
+        return n
+    | otherwise = return n
