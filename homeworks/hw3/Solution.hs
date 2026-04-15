@@ -2,7 +2,9 @@ import qualified Data.Map as Map
 import Data.Map (Map)
 
 import Control.Monad (guard)
+import Control.Monad.RWS (MonadWriter(tell))
 
+import Control.Monad.Writer
 -- MAYBE MONAD
 
 -- Exercise 1: Maze navigation
@@ -47,7 +49,7 @@ decryptWords key = traverse (decrypt key)
 
 -- LIST MONAD
 
--- Exercise 3: List Monad
+-- Exercise 3: Seating arrangements
 
 type Guest = String
 type Conflict = (Guest, Guest)
@@ -82,7 +84,7 @@ removeFirst y (x:xs)
 
 -- CUSTOM MONAD
 
--- Exercise 4: List Monad
+-- Exercise 4: Result monad with warnings
 
 data Result a = Failure String | Success a [String]
     deriving Show
@@ -126,3 +128,21 @@ validateAge n
 
 validateAges :: [Int] -> Result [Int]
 validateAges = mapM validateAge
+
+-- WRITER MONAD
+
+-- Exercise 5: Evaluator with simplification log
+
+data Expr = Lit Int | Add Expr Expr | Mul Expr Expr | Neg Expr
+    deriving Show
+
+simplify :: Expr -> Writer [String] Expr
+simplify (Lit n) = return (Lit n)
+
+simplify (Neg e) = do
+    e' <- simplify e
+    case e' of
+        Neg inner -> do
+            tell ["Double negation: -(-e) -> e"]
+            return inner
+        _ -> return (Neg e')
