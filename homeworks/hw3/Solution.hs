@@ -182,3 +182,5 @@ simplify (Mul a b) = do
             tell ["Multiply constant folding: " ++ show m ++ " * " ++ show n ++ " -> " ++ show (m * n)]
             return (Lit (m * n))
         _ -> return (Mul a' b') 
+
+    --
