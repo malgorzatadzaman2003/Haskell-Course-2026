@@ -204,3 +204,9 @@ instance Applicative ZipList where
 -- pure (+) <*> ZipList [1,2,3] <*> ZipList [10,20,30]  -- should be ZipList [11,22,33]
 
 -- (c) Explain (in a comment) why ZipList cannot have a lawful Monad instance
+
+-- ZipList works by matching elements by position.
+-- A Monad would need >>= to take each element and replace it with a new ZipList,
+-- but these new lists may possibly have different lengths.
+-- Then it is not clear how to zip them together in a consistent way.
+-- So ZipList cannot have a lawful Monad instance.
