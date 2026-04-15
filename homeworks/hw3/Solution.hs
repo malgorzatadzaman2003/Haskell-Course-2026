@@ -183,4 +183,24 @@ simplify (Mul a b) = do
             return (Lit (m * n))
         _ -> return (Mul a' b') 
 
-    --
+-- ADDITIONAL (extra assignment)
+
+-- Exercise 6: ZipList — an Applicative that is not a Monad
+
+newtype ZipList a = ZipList { getZipList :: [a] } deriving (Show)
+
+-- (a) Functor and Applicative instances for ZipList
+
+instance Functor ZipList where
+    fmap f (ZipList xs) = ZipList (map f xs)
+
+instance Applicative ZipList where
+    pure x = ZipList (repeat x)
+    ZipList fs <*> ZipList xs = ZipList (zipWith ($) fs xs)
+
+-- (b) Verify that your instance satisfies the applicative laws
+
+-- pure id <*> ZipList [1,2,3]                          -- should be ZipList [1,2,3]
+-- pure (+) <*> ZipList [1,2,3] <*> ZipList [10,20,30]  -- should be ZipList [11,22,33]
+
+-- (c) Explain (in a comment) why ZipList cannot have a lawful Monad instance
