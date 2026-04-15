@@ -158,6 +158,27 @@ simplify (Add a b) = do
             tell ["Add identity: " ++ show e ++ " + 0 -> " ++ show e]
             return e
         (Lit m, Lit n) -> do
-            tell ["Constant folding: " ++ show m ++ " + " ++ show n ++ " -> " ++ show (m + n)]
+            tell ["Add constant folding: " ++ show m ++ " + " ++ show n ++ " -> " ++ show (m + n)]
             return (Lit (m + n))
         _ -> return (Add a' b')
+
+simplify (Mul a b) = do
+    a' <- simplify a
+    b' <- simplify b
+    case(a', b') of
+        (Lit 0, _) -> do
+            tell ["Multiply zero: 0 * " ++ show b' ++ " -> 0"]
+            return (Lit 0)
+        (_, Lit 0) -> do
+            tell ["Multiply zero: " ++ show a' ++ " * 0 -> 0"]
+            return (Lit 0)
+        (Lit 1, e) -> do
+            tell ["Multiply identity: 1 * " ++ show e ++ " -> " ++ show e]
+            return e
+        (e, Lit 1) -> do
+            tell ["Multiply identity: " ++ show e ++ " * 1 -> " ++ show e]
+            return e
+        (Lit m, Lit n) -> do
+            tell ["Multiply constant folding: " ++ show m ++ " * " ++ show n ++ " -> " ++ show (m * n)]
+            return (Lit (m * n))
+        _ -> return (Mul a' b') 
