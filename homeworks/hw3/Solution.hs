@@ -143,6 +143,21 @@ simplify (Neg e) = do
     e' <- simplify e
     case e' of
         Neg inner -> do
-            tell ["Double negation: -(-e) -> e"]
+            tell ["Double negation: -(-" ++ show inner ++ ") -> " ++ show inner]
             return inner
         _ -> return (Neg e')
+
+simplify (Add a b) = do
+    a' <- simplify a
+    b' <- simplify b
+    case(a', b') of
+        (Lit 0, e) -> do
+            tell ["Add identity: 0 + " ++ show e ++ " -> " ++ show e]
+            return e
+        (e, Lit 0) -> do
+            tell ["Add identity: " ++ show e ++ " + 0 -> " ++ show e]
+            return e
+        (Lit m, Lit n) -> do
+            tell ["Constant folding: " ++ show m ++ " + " ++ show n ++ " -> " ++ show (m + n)]
+            return (Lit (m + n))
+        _ -> return (Add a' b')
