@@ -19,4 +19,8 @@ instance Applicative (Reader r) where
 
 instance Monad (Reader r) where
   -- (>>=) :: Reader r a -> (a -> Reader r b) -> Reader r b
-  (>>=) = undefined
+  Reader ra >>= f =
+        Reader (\env ->
+            let a = ra env
+                Reader rb = f a
+            in rb env)
