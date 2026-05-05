@@ -12,9 +12,10 @@ instance Functor (Reader r) where
 
 instance Applicative (Reader r) where
   -- pure   :: a -> Reader r a
-  pure   = undefined
+  pure x = Reader (\_ -> x)
   -- liftA2 :: (a -> b -> c) -> Reader r a -> Reader r b -> Reader r c
-  liftA2 = undefined
+  liftA2 f (Reader ra) (Reader rb) =
+        Reader (\env -> f (ra env) (rb env))
 
 instance Monad (Reader r) where
   -- (>>=) :: Reader r a -> (a -> Reader r b) -> Reader r b
