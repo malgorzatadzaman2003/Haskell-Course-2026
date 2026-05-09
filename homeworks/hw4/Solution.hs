@@ -82,3 +82,17 @@ checkMinimumBalance :: Account -> Reader BankConfig Bool
 checkMinimumBalance acc = do
     minBal <- asks minimumBalance
     return (balance acc >= minBal)
+
+-- (d) Implement `processAccount` 
+-- Runs the three operations above on a single account and combines their results.
+-- The returned tuple contains:
+--   * the account after the transaction fee has been applied,
+--   * the interest computed from the ORIGINAL account,
+--   * whether the ORIGINAL account meets the minimum balance requirement.
+
+processAccount :: Account -> Reader BankConfig (Account, Int, Bool)
+processAccount acc = do
+    accAfterFee <- applyTransactionFee acc
+    interest <- calculateInterest acc
+    meetsMinimum <- checkMinimumBalance acc
+    return (accAfterFee, interest, meetsMinimum)
