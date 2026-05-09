@@ -60,7 +60,17 @@ data Account = Account
 -- (a) Implement `calculateInterest` 
 -- Computes the interest accrued on the account, based on the configured rate.
 -- The result should be an Int — round or truncate as you see fit, but be consistent.
+
 calculateInterest :: Account -> Reader BankConfig Int
 calculateInterest acc = do
     rate <- asks interestRate
     return (floor (fromIntegral (balance acc) * rate))
+
+-- (a) Implement `applyTransactionFee` 
+-- Deducts the transaction fee from the account and returns the updated account.
+-- The accountId should remain unchanged.
+
+applyTransactionFee :: Account -> Reader BankConfig Account
+applyTransactionFee acc = do
+    fee <- asks transactionFee
+    return acc { balance = balance acc - fee }
