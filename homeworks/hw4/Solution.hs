@@ -66,7 +66,7 @@ calculateInterest acc = do
     rate <- asks interestRate
     return (floor (fromIntegral (balance acc) * rate))
 
--- (a) Implement `applyTransactionFee` 
+-- (b) Implement `applyTransactionFee` 
 -- Deducts the transaction fee from the account and returns the updated account.
 -- The accountId should remain unchanged.
 
@@ -74,3 +74,11 @@ applyTransactionFee :: Account -> Reader BankConfig Account
 applyTransactionFee acc = do
     fee <- asks transactionFee
     return acc { balance = balance acc - fee }
+
+-- (c) Implement `checkMinimumBalance` 
+-- Checks whether the account balance meets the configured minimum.
+
+checkMinimumBalance :: Account -> Reader BankConfig Bool
+checkMinimumBalance acc = do
+    minBal <- asks minimumBalance
+    return (balance acc >= minBal)
