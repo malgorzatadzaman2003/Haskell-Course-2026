@@ -128,3 +128,39 @@ editDistance :: String -> String -> Int
 editDistance xs ys =
     evalState (editDistM xs ys (length xs) (length ys)) Map.empty
 
+-- StateT and "Treasure Hunters" Game Simulation
+
+-- game data types + board 
+data Location
+    = Normal
+    | Decision [String]
+    | Obstacle Int
+    | Treasure Int
+    | Trap Int
+    | Goal
+    deriving (Show)
+
+data GameState = GameState
+    { position :: Int
+    , energy   :: Int
+    , score    :: Int
+    , pathName :: String
+    } deriving (Show)
+
+type AdventureGame a = StateT GameState IO a
+
+board :: Map Int Location
+board = Map.fromList
+    [ (0, Normal)
+    , (1, Treasure 10)
+    , (2, Decision ["forest", "cave"])
+    , (3, Obstacle 2)
+    , (4, Treasure 20)
+    , (5, Trap 15)
+    , (6, Obstacle 3)
+    , (7, Treasure 30)
+    , (8, Goal)
+    ]
+
+-- 4: Player movement and decisions
+
