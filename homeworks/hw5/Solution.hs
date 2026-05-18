@@ -55,3 +55,48 @@ execProg (i:is) = do
 
 runProg :: [Instr] -> [Int]
 runProg program = execState (execProg program) []
+
+-- Exercise 2: Expression evaluator with variable bindings
+
+data Expr
+    = Num Int
+    | Var String
+    | Add Expr Expr
+    | Mul Expr Expr
+    | Neg Expr
+    | Assign String Expr
+    | Seq Expr Expr
+    deriving (Show)
+
+eval :: Expr -> State (Map String Int) Int
+eval (Num n) = return n
+
+eval (Var name) = do
+    env <- get
+    return (env Map.! name)
+
+eval (Add e1 e2) = do
+    v1 <- eval e1
+    v2 <- eval e2
+    return (v1 + v2)
+
+eval (Mul e1 e2) = do
+    v1 <- eval e1
+    v2 <- eval e2
+    return (v1 * v2)
+
+eval (Neg e) = do
+    v <- eval e
+    return (-v)
+
+eval (Assign name e) = do
+    v <- eval e
+    modify (Map.insert name v)
+    return v
+
+eval (Seq e1 e2) = do
+    eval e1
+    eval e2
+
+runEval :: Expr -> Int
+runEval e = evalState (eval e) Map.empty
