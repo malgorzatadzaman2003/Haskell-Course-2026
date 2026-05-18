@@ -100,3 +100,31 @@ eval (Seq e1 e2) = do
 
 runEval :: Expr -> Int
 runEval e = evalState (eval e) Map.empty
+
+-- Exercise 3: Memoised edit (Levenshtein) distance
+
+editDistM :: String -> String -> Int -> Int -> State (Map (Int, Int) Int) Int
+editDistM xs ys i j = do
+    cache <- get
+    case Map.lookup (i, j) cache of
+        Just value -> return value
+        Nothing -> do
+            value <- compute
+            modify (Map.insert (i, j) value)
+            return value
+  where
+    compute
+        | i == 0 = return j
+        | j == 0 = return i
+        | xs !! (i - 1) == ys !! (j - 1) =
+            editDistM xs ys (i - 1) (j - 1)
+        | otherwise = do
+            deletion <- editDistM xs ys (i - 1) j
+            insertion <- editDistM xs ys i (j - 1)
+            substitution <- editDistM xs ys (i - 1) (j - 1)
+            return (1 + minimum [deletion, insertion, substitution])
+
+editDistance :: String -> String -> Int
+editDistance xs ys =
+    evalState (editDistM xs ys (length xs) (length ys)) Map.empty
+
