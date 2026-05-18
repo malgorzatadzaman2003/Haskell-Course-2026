@@ -164,3 +164,127 @@ board = Map.fromList
 
 -- 4: Player movement and decisions
 
+movePlayer :: Int -> AdventureGame Int
+movePlayer dice = do
+    st <- get
+    let currentPos = position st
+        currentEnergy = energy st
+        moved = min dice currentEnergy
+        newPos = min 8 (currentPos + moved)
+        newEnergy = currentEnergy - moved
+    put st { position = newPos, energy = newEnergy }
+    return moved
+
+makeDecision :: [String] -> AdventureGame String
+makeDecision options = do
+    choice <- lift (getPlayerChoice options)
+    modify (\st -> st { pathName = choice })
+    return choice
+
+-- 5: Game loop
+
+handleLocation :: AdventureGame Bool
+handleLocation = do
+    st <- get
+    let loc = Map.findWithDefault Normal (position st) board
+    case loc of
+        Normal -> do
+            lift (putStrLn "You are on a quiet path.")
+            return False
+
+        Decision options -> do
+            lift (putStrLn "You reached a decision point.")
+            choice <- makeDecision options
+            lift (putStrLn ("You chose: " ++ choice))
+            return False
+
+        Obstacle cost -> do
+            lift (putStrLn ("Obstacle! You lose " ++ show cost ++ " extra energy."))
+            modify (\s -> s { energy = max 0 (energy s - cost) })
+            return False
+
+        Treasure points -> do
+            lift (putStrLn ("Treasure found! +" ++ show points ++ " points."))
+            modify (\s -> s { score = score s + points })
+            return False
+
+        Trap points -> do
+            lift (putStrLn ("Trap! You lose " ++ show points ++ " points."))
+            modify (\s -> s { score = max 0 (score s - points) })
+            return False
+
+        Goal -> do
+            lift (putStrLn "You reached the main treasure!")
+            return True
+
+playTurn :: AdventureGame Bool
+playTurn = do
+    st <- get
+    if energy st <= 0
+        then do
+            lift (putStrLn "You ran out of energy!")
+            return True
+        else do
+            dice <- lift getDiceRoll
+            moved <- movePlayer dice
+            lift (putStrLn ("You moved " ++ show moved ++ " spaces."))
+            ended <- handleLocation
+            newState <- get
+            lift (displayGameState newState)
+            if energy newState <= 0
+                then do
+                    lift (putStrLn "Game over: no energy left.")
+                    return True
+                else return ended
+
+playGame :: AdventureGame ()
+playGame = do
+    ended <- playTurn
+    if ended
+        then lift (putStrLn "Thanks for playing Treasure Hunters!")
+        else playGame
+
+-- 5: User interaction in IO
+getDiceRoll :: IO Int
+getDiceRoll = do
+    putStrLn "Enter dice roll (1-6):"
+    input <- getLine
+    case reads input of
+        [(n, "")] | n >= 1 && n <= 6 -> return n
+        _ -> do
+            putStrLn "Invalid dice roll. Please enter a number from 1 to 6."
+            getDiceRoll
+
+displayGameState :: GameState -> IO ()
+displayGameState st = do
+    putStrLn "----- Game State -----"
+    putStrLn ("Position: " ++ show (position st))
+    putStrLn ("Energy:   " ++ show (energy st))
+    putStrLn ("Score:    " ++ show (score st))
+    putStrLn ("Path:     " ++ pathName st)
+    putStrLn "----------------------"
+
+getPlayerChoice :: [String] -> IO String
+getPlayerChoice options = do
+    putStrLn "Choose a path:"
+    mapM_ putStrLn options
+    input <- getLine
+    if input `elem` options
+        then return input
+        else do
+            putStrLn "Invalid choice. Try again."
+            getPlayerChoice options
+
+initialGameState :: GameState
+initialGameState = GameState
+    { position = 0
+    , energy = 15
+    , score = 0
+    , pathName = "start"
+    }
+
+main :: IO ()
+main = do
+    putStrLn "Welcome to Treasure Hunters!"
+    displayGameState initialGameState
+    evalStateT playGame initialGameState
