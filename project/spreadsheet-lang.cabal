@@ -7,10 +7,13 @@ library
   exposed-modules:
       SpreadsheetLang
       SpreadsheetLang.AST
+      SpreadsheetLang.Parser
   hs-source-dirs: src
   build-depends:
-      base >=4.14 && <5,
-      containers
+    base >=4.14 && <5,
+    containers,
+    megaparsec,
+    text
   default-language: Haskell2010
 
 executable spreadsheet-lang
@@ -18,7 +21,9 @@ executable spreadsheet-lang
   hs-source-dirs: app
   build-depends:
       base,
-      spreadsheet-lang
+      spreadsheet-lang,
+      megaparsec,
+      text
   default-language: Haskell2010
 
 test-suite spreadsheet-lang-test
@@ -28,5 +33,8 @@ test-suite spreadsheet-lang-test
   build-depends:
       base,
       spreadsheet-lang,
-      hspec
+      hspec,
+      megaparsec,
+      text
   default-language: Haskell2010
+
