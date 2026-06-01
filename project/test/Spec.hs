@@ -31,4 +31,26 @@ main = hspec $ do
                 Right
                 (Sheet [ Cell ("A",1) (Lit (NumV 10))
                        , Cell ("A",2) (Lit (NumV 20))
-                       ])   
+                       ])  
+
+        it "parses formula with cell references" $ do
+          parse parseCell "" "A3 = A1 + A2;"
+            `shouldBe`
+            Right
+                (Cell ("A",3)
+                    (Form
+                    (BinOp Add
+                        (Ref ("A",1))
+                        (Ref ("A",2)))))
+
+        it "respects operator precedence" $ do
+          parse parseCell "" "A4 = A1 + A2 * 2;"
+            `shouldBe`
+            Right
+              (Cell ("A",4)
+                (Form
+                  (BinOp Add
+                    (Ref ("A",1))
+                    (BinOp Mul
+                      (Ref ("A",2))
+                      (LitE (NumV 2))))))

@@ -13,7 +13,8 @@ library
     base >=4.14 && <5,
     containers,
     megaparsec,
-    text
+    text,
+    parser-combinators
   default-language: Haskell2010
 
 executable spreadsheet-lang
