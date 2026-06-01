@@ -1,0 +1,32 @@
+cabal-version: 3.0
+name: spreadsheet-lang
+version: 0.1.0.0
+build-type: Simple
+
+library
+  exposed-modules:
+      SpreadsheetLang
+      SpreadsheetLang.AST
+  hs-source-dirs: src
+  build-depends:
+      base >=4.14 && <5,
+      containers
+  default-language: Haskell2010
+
+executable spreadsheet-lang
+  main-is: Main.hs
+  hs-source-dirs: app
+  build-depends:
+      base,
+      spreadsheet-lang
+  default-language: Haskell2010
+
+test-suite spreadsheet-lang-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs: test
+  build-depends:
+      base,
+      spreadsheet-lang,
+      hspec
+  default-language: Haskell2010
