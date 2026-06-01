@@ -5,6 +5,11 @@ import Text.Megaparsec
 
 main :: IO ()
 main = do
+    let input =
+            "sheet {\n\
+            \  A1 = 10;\n\
+            \  A2 = 20;\n\
+            \}"
 
     print $
-        parse parseCell "" "A1 = 10;"
+        parse parseSheet "" input

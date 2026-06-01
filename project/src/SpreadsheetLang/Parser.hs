@@ -32,7 +32,20 @@ parseCell = do
     space
     val <- parseNumber
     char ';'
+    space
     pure $
         Cell  addr  (Lit val)
 
-
+parseSheet :: Parser Sheet  
+parseSheet = do
+    space
+    string "sheet"
+    space
+    char '{'
+    space
+    cells <- many parseCell
+    space
+    char '}'
+    space
+    eof
+    pure (Sheet cells)
