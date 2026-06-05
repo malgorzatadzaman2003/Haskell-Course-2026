@@ -1,9 +1,12 @@
 module Main where
 
-import Test.Hspec
 import SpreadsheetLang.AST
 import SpreadsheetLang.Parser
+import SpreadsheetLang.Evaluator
+
+import Test.Hspec
 import Text.Megaparsec
+import qualified Data.Map as Map
 
 main :: IO ()
 main = hspec $ do
@@ -54,3 +57,15 @@ main = hspec $ do
                     (BinOp Mul
                       (Ref ("A",2))
                       (LitE (NumV 2))))))
+
+    describe "Evaluator" $ do
+        it "evaluates a sheet with only literals" $ do
+            let sheet = Sheet [ Cell ("A",1) (Lit (NumV 10))
+                              , Cell ("A",2) (Lit (NumV 20))
+                              ]
+            evaluateSheet sheet
+                `shouldBe`
+                Map.fromList [ (("A",1), NumV 10)
+                             , (("A",2), NumV 20)
+                             ]
+                                    

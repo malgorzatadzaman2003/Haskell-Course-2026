@@ -1,6 +1,8 @@
 module Main where
 
 import SpreadsheetLang.Parser
+import SpreadsheetLang.Evaluator
+
 import Text.Megaparsec
 
 main :: IO ()
@@ -13,5 +15,10 @@ main = do
             \  A4 = A3 * 2;\n\
             \}"
 
-    print $
-        parse parseSheet "" input
+    case parse parseSheet "" input of
+        Left err ->
+            print err
+
+        Right sheet ->
+            print $
+                evaluateSheet sheet
