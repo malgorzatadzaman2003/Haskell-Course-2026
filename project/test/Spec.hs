@@ -68,4 +68,21 @@ main = hspec $ do
                 Map.fromList [ (("A",1), NumV 10)
                              , (("A",2), NumV 20)
                              ]
-                                    
+        it "evaluates formulas with references" $ do
+            let sheet =
+                    Sheet   [ Cell ("A",1) (Lit (NumV 10))
+                            , Cell ("A",2) (Lit (NumV 20))
+                            , Cell ("A",3)
+                                (Form
+                                    (BinOp Add
+                                        (Ref ("A",1))
+                                        (Ref ("A",2))))
+                            ]
+
+            evaluateSheet sheet
+                `shouldBe`
+                    Map.fromList
+                        [ (("A",1), NumV 10)
+                        , (("A",2), NumV 20)
+                        , (("A",3), NumV 30)
+                        ]
