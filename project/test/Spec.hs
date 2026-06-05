@@ -3,6 +3,7 @@ module Main where
 import SpreadsheetLang.AST
 import SpreadsheetLang.Parser
 import SpreadsheetLang.Evaluator
+import SpreadsheetLang.Dependency
 
 import Test.Hspec
 import Text.Megaparsec
@@ -69,10 +70,9 @@ main = hspec $ do
                              , (("A",2), NumV 20)
                              ]
         it "evaluates formulas with references" $ do
-            let sheet =
-                    Sheet   [ Cell ("A",1) (Lit (NumV 10))
-                            , Cell ("A",2) (Lit (NumV 20))
-                            , Cell ("A",3)
+            let sheet = Sheet [ Cell ("A",1) (Lit (NumV 10))
+                              , Cell ("A",2) (Lit (NumV 20))
+                              , Cell ("A",3)
                                 (Form
                                     (BinOp Add
                                         (Ref ("A",1))
@@ -85,4 +85,25 @@ main = hspec $ do
                         [ (("A",1), NumV 10)
                         , (("A",2), NumV 20)
                         , (("A",3), NumV 30)
+                        ]
+
+    describe "Dependency graph" $ do
+        it "extracts dependencies from formulas" $ do
+            let sheet = Sheet [ Cell ("A",1) (Lit (NumV 10))
+                              , Cell ("A",2) (Lit (NumV 20))
+                              , Cell ("A",3)
+                                (Form
+                                    (BinOp Add
+                                        (Ref ("A",1))
+                                        (Ref ("A",2))))
+                              ]
+            buildDependencyGraph sheet
+                `shouldBe`
+                    Map.fromList
+                        [ (("A",1), [])
+                        , (("A",2), [])
+                        , (("A",3),
+                            [ ("A",1)
+                            , ("A",2)
+                            ])
                         ]
