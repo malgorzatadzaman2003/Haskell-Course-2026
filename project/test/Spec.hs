@@ -59,6 +59,13 @@ main = hspec $ do
                     (BinOp Mul
                       (Ref ("A",2))
                       (LitE (NumV 2))))))
+        it "parses SUM range formula" $ do
+            parse parseCell "" "A4 = SUM(A1:A3);"
+                `shouldBe`
+                Right
+                (Cell ("A",4)
+                    (Form
+                        (RangeOp SumR ("A",1) ("A",3))))
 
     describe "Evaluator" $ do
         it "evaluates a sheet with only literals" $ do

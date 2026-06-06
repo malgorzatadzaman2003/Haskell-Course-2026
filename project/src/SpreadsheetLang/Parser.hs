@@ -48,8 +48,9 @@ parseRefExpr = do
 
 -- Parser for terms, which can be either a number, a cell reference, or a parenthesized expression
 parseTerm :: Parser Expr
-parseTerm = 
-        parseNumberExpr 
+parseTerm =
+        parseRangeExpr
+    <|> parseNumberExpr
     <|> parseRefExpr
     <|> between (symbol "(") (symbol ")") parseExpr
 
@@ -108,3 +109,19 @@ parseSheet = do
     space
     eof
     pure (Sheet cells)
+
+parseRangeExpr :: Parser Expr
+parseRangeExpr = do
+    _ <- string "SUM"
+    space
+    _ <- char '('
+    space
+    start <- parseAddr
+    space
+    _ <- char ':'
+    space
+    end <- parseAddr
+    space
+    _ <- char ')'
+    space
+    pure (RangeOp SumR start end)
