@@ -113,6 +113,50 @@ main = hspec $ do
                     , (("A",2), NumV 20)
                     , (("A",3), NumV 30)
                     ]
+        it "returns error for unknown cell reference" $ do
+            let sheet =
+                    Sheet[ Cell ("A",1)
+                            (Form
+                                (Ref ("B",1)))
+                         ]
+            evaluateSheet sheet
+                `shouldBe`
+                Map.fromList
+                [ (("A",1), ErrV "Unknown cell")
+                ]
+
+        it "returns error for division by zero" $ do
+            let sheet =
+                    Sheet [ Cell ("A",1)
+                            (Form
+                                (BinOp Div
+                                (LitE (NumV 10))
+                                (LitE (NumV 0))))
+                    ]
+            evaluateSheet sheet
+                `shouldBe`
+                Map.fromList
+                [ (("A",1), ErrV "Division by zero")
+                ]
+
+        it "propagates errors through formulas" $ do
+            let sheet =
+                    Sheet [ Cell ("A",1)
+                            (Form
+                                (Ref ("B",1)))
+                            , Cell ("A",2)
+                                (Form
+                                    (BinOp Add
+                                    (Ref ("A",1))
+                                    (LitE (NumV 5))))
+                        ]
+
+            evaluateSheet sheet
+                `shouldBe`
+                Map.fromList
+                [ (("A",1), ErrV "Unknown cell")
+                , (("A",2), ErrV "Unknown cell")
+                ]
 
     describe "Dependency graph" $ do
         it "extracts dependencies from formulas" $ do
