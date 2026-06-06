@@ -4,6 +4,7 @@ import SpreadsheetLang.AST
 import SpreadsheetLang.Parser
 import SpreadsheetLang.Evaluator
 import SpreadsheetLang.Dependency
+import SpreadsheetLang.CycleDetection
 
 import Test.Hspec
 import Text.Megaparsec
@@ -107,3 +108,15 @@ main = hspec $ do
                             , ("A",2)
                             ])
                         ]
+
+    describe "Cycle detection" $ do
+        it "detects a simple cycle" $ do
+            let sheet = Sheet [ Cell ("A",1)
+                                (Form (Ref ("A",2)))
+                              , Cell ("A",2)
+                                (Form (Ref ("A",1)))
+                              ]
+            findCycles
+                (buildDependencyGraph sheet)
+                    `shouldBe`
+                    [("A",1),("A",2)]
