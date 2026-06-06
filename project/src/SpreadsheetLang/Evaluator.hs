@@ -89,5 +89,56 @@ evalExpr definitions env (BinOp op e1 e2) =
             _ ->
                 (env2, ErrV "Type error")
 
-evalExpr _ env (RangeOp _ _ _) =
-    (env, ErrV "Range operations not implemented yet")
+evalExpr definitions env (RangeOp SumR start end) =
+    let addresses =
+            expandRange start end
+        (env', values) =
+            evalAddresses definitions env addresses
+    in
+        (env', sumValues values)
+
+evalExpr _ env (RangeOp AvgR _ _) =
+    (env, ErrV "AVG not implemented yet")
+
+expandRange :: Addr -> Addr -> [Addr]
+expandRange (startCol, startRow) (endCol, endRow)
+    | startCol == endCol =
+        [ (startCol, row)
+        | row <- [startRow .. endRow]
+        ]
+    | otherwise =
+        []
+
+evalAddresses :: CellDefs -> CellMap -> [Addr] -> (CellMap, [Value])
+evalAddresses _ env [] =
+    (env, [])
+
+evalAddresses definitions env (addr : rest) =
+    let (env1, value) =
+            evalCell definitions env addr
+        (env2, values) =
+            evalAddresses definitions env1 rest
+    in
+        (env2, value : values)
+
+sumValues :: [Value] -> Value
+sumValues values =
+    case collectNumbers values of
+        Left err ->
+            ErrV err
+        Right nums ->
+            NumV (sum nums)
+
+collectNumbers :: [Value] -> Either String [Double]
+collectNumbers [] =
+    Right []
+collectNumbers (NumV x : rest) =
+    case collectNumbers rest of
+        Left err ->
+            Left err
+        Right xs ->
+            Right (x : xs)
+collectNumbers (ErrV err : _) =
+    Left err
+collectNumbers (_ : _) =
+    Left "Type error"

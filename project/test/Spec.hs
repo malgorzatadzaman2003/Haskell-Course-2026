@@ -165,6 +165,24 @@ main = hspec $ do
                 , (("A",2), ErrV "Unknown cell")
                 ]
 
+        it "evaluates SUM range formula" $ do
+            let sheet =
+                    Sheet [ Cell ("A",1) (Lit (NumV 10))
+                          , Cell ("A",2) (Lit (NumV 20))
+                          , Cell ("A",3) (Lit (NumV 30))
+                          , Cell ("A",4)
+                                (Form
+                                    (RangeOp SumR ("A",1) ("A",3)))
+                        ]
+            evaluateSheet sheet
+                `shouldBe`
+                Map.fromList
+                [ (("A",1), NumV 10)
+                , (("A",2), NumV 20)
+                , (("A",3), NumV 30)
+                , (("A",4), NumV 60)
+                ]
+
     describe "Dependency graph" $ do
         it "extracts dependencies from formulas" $ do
             let sheet = Sheet [ Cell ("A",1) (Lit (NumV 10))
