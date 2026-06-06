@@ -97,6 +97,22 @@ main = hspec $ do
                         [ (("A",1), ErrV "cycle")
                         , (("A",2), ErrV "cycle")
                         ]
+        it "evaluates formulas independently of cell order" $ do
+            let sheet = Sheet [ Cell ("A",3)
+                                (Form
+                                    (BinOp Add
+                                        (Ref ("A",1))
+                                        (Ref ("A",2))))
+                                , Cell ("A",1) (Lit (NumV 10))
+                                , Cell ("A",2) (Lit (NumV 20))
+                            ]
+            evaluateSheet sheet
+                `shouldBe`
+                Map.fromList
+                    [ (("A",1), NumV 10)
+                    , (("A",2), NumV 20)
+                    , (("A",3), NumV 30)
+                    ]
 
     describe "Dependency graph" $ do
         it "extracts dependencies from formulas" $ do
