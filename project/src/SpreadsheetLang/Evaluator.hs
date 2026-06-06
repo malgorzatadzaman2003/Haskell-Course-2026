@@ -1,21 +1,32 @@
 module SpreadsheetLang.Evaluator where
 
 import SpreadsheetLang.AST
+import SpreadsheetLang.Dependency
+import SpreadsheetLang.CycleDetection
+
 
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 
 type CellMap = Map.Map Addr Value
 
 evaluateSheet :: Sheet -> CellMap
-evaluateSheet (Sheet cells) =
-    foldl evaluateOne Map.empty cells
+evaluateSheet sheet@(Sheet cells) =
+    foldl evaluateOne initialEnv cells
+    where
+        graph = buildDependencyGraph sheet
+        cycleCells = findCycles graph
+        initialEnv = Map.fromList 
+            [ (addr, ErrV "cycle")
+            | addr <- cycleCells
+            ]
 
 evaluateOne :: CellMap -> Cell -> CellMap
 evaluateOne env (Cell addr content) =
-    let value =
-            evaluateContent env content
-    in
-        Map.insert addr value env
+    case Map.lookup addr env of
+        Just (ErrV "cycle") -> env
+        _ ->  let value = evaluateContent env content
+              in Map.insert addr value env
 
 -- evaluateCell :: Cell -> (Addr, Value)
 -- evaluateCell (Cell a content) =

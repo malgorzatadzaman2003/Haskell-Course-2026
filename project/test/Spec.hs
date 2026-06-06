@@ -87,6 +87,16 @@ main = hspec $ do
                         , (("A",2), NumV 20)
                         , (("A",3), NumV 30)
                         ]
+        it "returns cycle error for cells in a cycle" $ do
+            let sheet = Sheet [ Cell ("A",1) (Form (Ref ("A",2)))
+                              , Cell ("A",2) (Form (Ref ("A",1)))
+                             ]
+            evaluateSheet sheet
+                `shouldBe`
+                    Map.fromList
+                        [ (("A",1), ErrV "cycle")
+                        , (("A",2), ErrV "cycle")
+                        ]
 
     describe "Dependency graph" $ do
         it "extracts dependencies from formulas" $ do
