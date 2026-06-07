@@ -111,7 +111,12 @@ parseSheet = do
     pure (Sheet cells)
 
 parseRangeExpr :: Parser Expr
-parseRangeExpr = do
+parseRangeExpr =
+        parseSumRange
+    <|> parseAvgRange
+
+parseSumRange :: Parser Expr
+parseSumRange = do
     _ <- string "SUM"
     space
     _ <- char '('
@@ -125,3 +130,19 @@ parseRangeExpr = do
     _ <- char ')'
     space
     pure (RangeOp SumR start end)
+
+parseAvgRange :: Parser Expr
+parseAvgRange = do
+    _ <- string "AVG"
+    space
+    _ <- char '('
+    space
+    start <- parseAddr
+    space
+    _ <- char ':'
+    space
+    end <- parseAddr
+    space
+    _ <- char ')'
+    space
+    pure (RangeOp AvgR start end)

@@ -97,8 +97,13 @@ evalExpr definitions env (RangeOp SumR start end) =
     in
         (env', sumValues values)
 
-evalExpr _ env (RangeOp AvgR _ _) =
-    (env, ErrV "AVG not implemented yet")
+evalExpr definitions env (RangeOp AvgR start end) =
+    let addresses =
+            expandRange start end
+        (env', values) =
+            evalAddresses definitions env addresses
+    in
+        (env', avgValues values)
 
 expandRange :: Addr -> Addr -> [Addr]
 expandRange (startCol, startRow) (endCol, endRow)
@@ -128,6 +133,16 @@ sumValues values =
             ErrV err
         Right nums ->
             NumV (sum nums)
+
+avgValues :: [Value] -> Value
+avgValues values =
+    case collectNumbers values of
+        Left err ->
+            ErrV err
+        Right [] ->
+            ErrV "Empty range"
+        Right nums ->
+            NumV (sum nums / fromIntegral (length nums))
 
 collectNumbers :: [Value] -> Either String [Double]
 collectNumbers [] =
