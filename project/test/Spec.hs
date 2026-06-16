@@ -67,6 +67,20 @@ main = hspec $ do
                     (Form
                         (RangeOp SumR ("A",1) ("A",3))))
 
+        it "parses comments" $ do
+            let input =
+                    "sheet {\n\
+                    \  -- this is a comment\n\
+                    \  A1 = 10;\n\
+                    \  A2 = A1 + 5;\n\
+                    \}"
+            parse parseSheet "" input
+                `shouldBe`
+                Right
+                (Sheet [ Cell ("A",1) (Lit (NumV 10))
+                       , Cell ("A",2) (Form (BinOp Add (Ref ("A",1)) (LitE (NumV 5))))
+                       ])
+
     describe "Evaluator" $ do
         it "evaluates a sheet with only literals" $ do
             let sheet = Sheet [ Cell ("A",1) (Lit (NumV 10))
@@ -221,6 +235,23 @@ main = hspec $ do
                             , ("A",2)
                             ])
                         ]
+
+        it "extracts all dependencies from range formulas" $ do
+            let sheet = Sheet [ Cell ("A",1) (Lit (NumV 10))
+                              , Cell ("A",2) (Lit (NumV 20))
+                              , Cell ("A",3) (Lit (NumV 30))
+                              , Cell ("A",4) 
+                                (Form 
+                                    (RangeOp SumR ("A",1) ("A",3)))
+                              ]
+            buildDependencyGraph sheet
+                `shouldBe`
+                Map.fromList
+                    [ (("A",1), [])
+                    , (("A",2), [])
+                    , (("A",3), [])
+                    , (("A",4), [("A",1), ("A",2), ("A",3)])
+                    ]
 
     describe "Cycle detection" $ do
         it "detects a simple cycle" $ do

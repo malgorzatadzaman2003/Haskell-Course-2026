@@ -3,19 +3,33 @@ module SpreadsheetLang.Parser where
 import SpreadsheetLang.AST
 
 import Data.Void
+import Control.Monad (void)
 
 import Text.Megaparsec
 import Text.Megaparsec.Char
 
 import Control.Monad.Combinators.Expr
 
+import qualified Text.Megaparsec.Char.Lexer as L
+
 type Parser = Parsec Void String
+
+-- add support for comments and spaceConsumer
+lineComment :: Parser ()
+lineComment = do
+    _ <- string "--"
+    _ <- manyTill anySingle (void eol <|> eof)
+    pure ()
+
+spaceConsumer :: Parser ()
+spaceConsumer =
+    L.space space1 lineComment empty
 
 -- after symbols such as +, -, *, /, we consume any trailing whitespace
 symbol :: String -> Parser String
 symbol s = do
     result <- string s
-    space
+    spaceConsumer
     pure result
 
 
@@ -36,14 +50,14 @@ parseNumber = do
 parseNumberExpr :: Parser Expr
 parseNumberExpr = do
     val <- parseNumber
-    space
+    spaceConsumer
     pure (LitE val)
 
 -- Parser for cell references, e.g., "A1", "B2", etc.
 parseRefExpr :: Parser Expr
 parseRefExpr = do
     addr <- parseAddr
-    space
+    spaceConsumer
     pure (Ref addr)
 
 -- Parser for terms, which can be either a number, a cell reference, or a parenthesized expression
@@ -82,12 +96,12 @@ exprToContent expr = Form expr
 parseCell:: Parser Cell
 parseCell = do
     addr <- parseAddr
-    space
+    spaceConsumer
     char '='
-    space
+    spaceConsumer
     expr <- parseExpr
     char ';'
-    space
+    spaceConsumer   
     pure $
         Cell  addr  (exprToContent expr)
 
@@ -98,15 +112,15 @@ parseCell = do
 -- }        
 parseSheet :: Parser Sheet  
 parseSheet = do
-    space
+    spaceConsumer
     string "sheet"
-    space
+    spaceConsumer
     char '{'
-    space
+    spaceConsumer   
     cells <- many parseCell
-    space
+    spaceConsumer
     char '}'
-    space
+    spaceConsumer
     eof
     pure (Sheet cells)
 
@@ -118,31 +132,31 @@ parseRangeExpr =
 parseSumRange :: Parser Expr
 parseSumRange = do
     _ <- string "SUM"
-    space
+    spaceConsumer
     _ <- char '('
-    space
+    spaceConsumer
     start <- parseAddr
-    space
+    spaceConsumer
     _ <- char ':'
-    space
+    spaceConsumer
     end <- parseAddr
-    space
+    spaceConsumer
     _ <- char ')'
-    space
+    spaceConsumer
     pure (RangeOp SumR start end)
 
 parseAvgRange :: Parser Expr
 parseAvgRange = do
     _ <- string "AVG"
-    space
+    spaceConsumer
     _ <- char '('
-    space
+    spaceConsumer
     start <- parseAddr
-    space
+    spaceConsumer
     _ <- char ':'
-    space
+    spaceConsumer
     end <- parseAddr
-    space
+    spaceConsumer
     _ <- char ')'
-    space
+    spaceConsumer
     pure (RangeOp AvgR start end)
