@@ -105,14 +105,6 @@ evalExpr definitions env (RangeOp AvgR start end) =
     in
         (env', avgValues values)
 
-expandRange :: Addr -> Addr -> [Addr]
-expandRange (startCol, startRow) (endCol, endRow)
-    | startCol == endCol =
-        [ (startCol, row)
-        | row <- [startRow .. endRow]
-        ]
-    | otherwise =
-        []
 
 evalAddresses :: CellDefs -> CellMap -> [Addr] -> (CellMap, [Value])
 evalAddresses _ env [] =

@@ -16,7 +16,16 @@ exprDependencies (BinOp _ e1 e2) =
     exprDependencies e1 ++
     exprDependencies e2
 exprDependencies (RangeOp _ a1 a2) =
-    [a1, a2]
+    expandRange a1 a2
+
+expandRange :: Addr -> Addr -> [Addr]
+expandRange (startCol, startRow) (endCol, endRow)
+    | startCol == endCol =
+        [ (startCol, row)
+        | row <- [startRow .. endRow]
+        ]
+    | otherwise =
+        []
 
 cellDependencies :: Cell -> [Addr]
 cellDependencies (Cell _ (Lit _)) =
